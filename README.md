@@ -1,9 +1,5 @@
 # Excalidraw Collaboration - Enhanced Fork
 
-> **This is a fork of [alswl/excalidraw-collaboration](https://github.com/alswl/excalidraw-collaboration)** with additional production-ready features and deployment options.
-
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/PjQnHs?referralCode=HM_ZCO)
-
 ## What's New in This Fork
 
 This enhanced version adds enterprise-grade features and deployment options to the original project:
@@ -150,10 +146,6 @@ A comprehensive security review has been conducted - see [SECURITY_REVIEW_REPORT
 **Problem:** Browser shows security warnings  
 **Solution:** Expected with self-signed certificates - click "Advanced" → "Proceed to site"
 
-### WebSocket Connection Failed
-**Problem:** Real-time collaboration not working  
-**Solution:** Check proxy configuration and ensure ingress/route supports WebSocket upgrades
-
 ## Resource Requirements
 
 ### Minimum Production Resources
@@ -167,26 +159,3 @@ A comprehensive security review has been conducted - see [SECURITY_REVIEW_REPORT
 | MongoDB* | 500m | 512Mi | 10Gi+ | Replica Set |
 
 *MongoDB not included in basic setup but recommended for production
-
-## Migration Guide
-
-### From Original Repository
-
-1. **Clone this enhanced fork:**
-   ```bash
-   git clone https://github.com/mueslipolo/excalidraw-collab.git
-   ```
-
-2. **Choose deployment method:**
-   - For development: Use `/local-https/` for working collaboration
-   - For production: Use `/k8s/` or `/openshift/` manifests
-
-3. **Update configuration:**
-   - Replace domain references in environment variables
-   - Configure proper SSL certificates for production
-
-## Credits & License
-
-- **Original Project:** [alswl/excalidraw-collaboration](https://github.com/alswl/excalidraw-collaboration) by [@alswl](https://github.com/alswl)
-- **Enhanced by:** Additional HTTPS support, container orchestration, and production deployment features
-- **License:** MIT License (same as original)
