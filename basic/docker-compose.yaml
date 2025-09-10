@@ -2,7 +2,7 @@
 
 services:
   frontend:
-    image: alswl/excalidraw:v0.17.3-fork-b1
+    image: docker.io/alswl/excalidraw:v0.17.3-fork-b1
     environment:
       - VITE_APP_BACKEND_V2_GET_URL=http://127.0.0.1:8081/api/v2/scenes/
       - VITE_APP_BACKEND_V2_POST_URL=http://127.0.0.1:8081/api/v2/scenes/
@@ -13,10 +13,10 @@ services:
       - VITE_APP_HTTP_STORAGE_BACKEND_URL=http://127.0.0.1:8081/api/v2
       - VITE_APP_STORAGE_BACKEND=http
     ports:
-      - 80:80
+      - 8080:80
 
   storage:
-    image: alswl/excalidraw-storage-backend:v2023.11.11
+    image: docker.io/alswl/excalidraw-storage-backend:v2023.11.11
     restart: always
     environment: # docs https://github.com/alswl/excalidraw-storage-backend#environement-variables
       - PORT=8081
@@ -24,6 +24,6 @@ services:
       - 8081:8081
 
   room:
-    image: excalidraw/excalidraw-room:sha-49bf529
+    image: docker.io/excalidraw/excalidraw-room:sha-49bf529
     ports:
       - 8082:80

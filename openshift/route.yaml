@@ -1,0 +1,56 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: excalidraw-route
+  namespace: excalidraw-collab
+  labels:
+    app: excalidraw-collaboration
+  annotations:
+    # Enable WebSocket support for collaboration
+    haproxy.router.openshift.io/timeout: "86400s"
+    haproxy.router.openshift.io/proxy-protocol: "v1"
+spec:
+  host: # Leave empty for auto-generated route, or specify your domain
+  to:
+    kind: Service
+    name: nginx-proxy
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+
+---
+# Alternative route with custom domain
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: excalidraw-custom-route
+  namespace: excalidraw-collab
+  labels:
+    app: excalidraw-collaboration
+  annotations:
+    haproxy.router.openshift.io/timeout: "86400s"
+    haproxy.router.openshift.io/proxy-protocol: "v1"
+spec:
+  host: excalidraw.apps.your-cluster.com  # Replace with your domain
+  to:
+    kind: Service
+    name: nginx-proxy
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+    certificate: |
+      -----BEGIN CERTIFICATE-----
+      # Add your TLS certificate here
+      -----END CERTIFICATE-----
+    key: |
+      -----BEGIN PRIVATE KEY-----
+      # Add your private key here
+      -----END PRIVATE KEY-----
+  wildcardPolicy: None

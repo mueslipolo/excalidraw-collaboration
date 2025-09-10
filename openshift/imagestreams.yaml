@@ -1,0 +1,86 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: excalidraw
+  namespace: excalidraw-collab
+  labels:
+    app: excalidraw-frontend
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+  - name: v0.17.3-fork-b1
+    annotations:
+      openshift.io/imported-from: docker.io/alswl/excalidraw:v0.17.3-fork-b1
+    from:
+      kind: DockerImage
+      name: docker.io/alswl/excalidraw:v0.17.3-fork-b1
+    importPolicy: {}
+    referencePolicy:
+      type: Source
+
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: excalidraw-storage-backend
+  namespace: excalidraw-collab
+  labels:
+    app: excalidraw-storage
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+  - name: v2023.11.11
+    annotations:
+      openshift.io/imported-from: docker.io/alswl/excalidraw-storage-backend:v2023.11.11
+    from:
+      kind: DockerImage
+      name: docker.io/alswl/excalidraw-storage-backend:v2023.11.11
+    importPolicy: {}
+    referencePolicy:
+      type: Source
+
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: excalidraw-room
+  namespace: excalidraw-collab
+  labels:
+    app: excalidraw-room
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+  - name: sha-49bf529
+    annotations:
+      openshift.io/imported-from: docker.io/excalidraw/excalidraw-room:sha-49bf529
+    from:
+      kind: DockerImage
+      name: docker.io/excalidraw/excalidraw-room:sha-49bf529
+    importPolicy: {}
+    referencePolicy:
+      type: Source
+
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: nginx
+  namespace: excalidraw-collab
+  labels:
+    app: nginx-proxy
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+  - name: alpine
+    annotations:
+      openshift.io/imported-from: docker.io/nginx:alpine
+    from:
+      kind: DockerImage
+      name: docker.io/nginx:alpine
+    importPolicy: {}
+    referencePolicy:
+      type: Source

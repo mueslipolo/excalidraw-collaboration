@@ -1,0 +1,52 @@
+services:
+  nginx-proxy:
+    image: docker.io/nginx:alpine
+    ports:
+      - "8443:443"
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./excalidraw.crt:/etc/nginx/ssl/excalidraw.crt:ro
+      - ./excalidraw.key:/etc/nginx/ssl/excalidraw.key:ro
+    depends_on:
+      - frontend
+      - storage
+      - room
+    restart: unless-stopped
+    networks:
+      - excalidraw-net
+
+  frontend:
+    image: docker.io/alswl/excalidraw:v0.17.3-fork-b1
+    environment:
+      - VITE_APP_BACKEND_V2_GET_URL=https://192.168.100.253:8443/api/v2/scenes/
+      - VITE_APP_BACKEND_V2_POST_URL=https://192.168.100.253:8443/api/v2/scenes/
+      - VITE_APP_WS_SERVER_URL=https://192.168.100.253:8443
+      - VITE_APP_FIREBASE_CONFIG={}
+      - VITE_APP_HTTP_STORAGE_BACKEND_URL=https://192.168.100.253:8443/api/v2
+      - VITE_APP_STORAGE_BACKEND=http
+    expose:
+      - "80"
+    networks:
+      - excalidraw-net
+
+  storage:
+    image: docker.io/alswl/excalidraw-storage-backend:v2023.11.11
+    restart: always
+    environment:
+      - PORT=8080
+    expose:
+      - "8080"
+    networks:
+      - excalidraw-net
+
+  room:
+    image: docker.io/excalidraw/excalidraw-room:sha-49bf529
+    expose:
+      - "80"
+    networks:
+      - excalidraw-net
+
+networks:
+  excalidraw-net:
+    driver: bridge

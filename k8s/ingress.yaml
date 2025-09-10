@@ -1,0 +1,65 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: excalidraw-ingress
+  namespace: excalidraw-collab
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-body-size: "40m"
+    # WebSocket support for collaboration
+    nginx.ingress.kubernetes.io/websocket-services: "nginx-proxy"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - YOUR_DOMAIN  # Replace with your actual domain
+    secretName: excalidraw-tls
+  rules:
+  - host: YOUR_DOMAIN  # Replace with your actual domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-proxy
+            port:
+              number: 80
+
+---
+# Alternative ingress without cert-manager (use manual TLS)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: excalidraw-ingress-manual-tls
+  namespace: excalidraw-collab
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-body-size: "40m"
+    nginx.ingress.kubernetes.io/websocket-services: "nginx-proxy"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - YOUR_DOMAIN  # Replace with your actual domain
+    secretName: manual-tls-secret  # Create this secret manually
+  rules:
+  - host: YOUR_DOMAIN  # Replace with your actual domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-proxy
+            port:
+              number: 80

@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: excalidraw-frontend
+  namespace: excalidraw-collab
+  labels:
+    app: excalidraw-frontend
+spec:
+  selector:
+    app: excalidraw-frontend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: excalidraw-storage
+  namespace: excalidraw-collab
+  labels:
+    app: excalidraw-storage
+spec:
+  selector:
+    app: excalidraw-storage
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: excalidraw-room
+  namespace: excalidraw-collab
+  labels:
+    app: excalidraw-room
+spec:
+  selector:
+    app: excalidraw-room
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-proxy
+  namespace: excalidraw-collab
+  labels:
+    app: nginx-proxy
+spec:
+  selector:
+    app: nginx-proxy
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  type: ClusterIP

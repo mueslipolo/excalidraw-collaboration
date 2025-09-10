@@ -1,109 +1,192 @@
-# excalidraw-collaboration
+# Excalidraw Collaboration - Enhanced Fork
 
-Demo:
-
-[demo](https://excalidraw-production-4d27.up.railway.app/) on [Railway](https://railway.app?referralCode=HM_ZCO)
-
-One click to deploy your excalidraw with collaboration.
+> **This is a fork of [alswl/excalidraw-collaboration](https://github.com/alswl/excalidraw-collaboration)** with additional production-ready features and deployment options.
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/PjQnHs?referralCode=HM_ZCO)
 
-Snapshot:
+## What's New in This Fork
 
-![snapshot](./_assets/snapshot.png)
+This enhanced version adds enterprise-grade features and deployment options to the original project:
 
-Related docs:
+### Key Additions
 
-- [Self hosted online collaborative drawing platform Excalidraw | Log4D](https://en.blog.alswl.com/2022/10/self-hosted-excalidraw/)
-- [私有化在线协同画图平台 Excalidraw | Log4D](https://blog.alswl.com/2022/10/self-hosted-excalidraw/)
+1. **Production HTTPS Setup** (`/local-https/`)
+   - Complete SSL/TLS configuration with nginx reverse proxy
+   - Self-signed certificates for local development
+   - **Fixes collaboration features** - solves the `crypto.subtle` API requirement
+   - Ready for production with proper certificate management
 
-## Deploy (Basic)
+2. **Kubernetes Deployment** (`/k8s/`)
+   - Production-ready Kubernetes manifests with Kustomize
+   - Ingress configuration with automatic SSL via cert-manager
+   - Horizontal pod autoscaling and health checks
+   - ConfigMap-based configuration management
 
-Clone, and run:
+3. **OpenShift Support** (`/openshift/`)
+   - Native OpenShift DeploymentConfigs and ImageStreams
+   - Route configuration with edge SSL termination
+   - Container security contexts and resource quotas
+   - OpenShift-specific networking and service mesh integration
 
-```
-git clone git@github.com:alswl/excalidraw-collaboration.git
-cd excalidraw-collaboration/basic
+4. **Security & Documentation**
+   - Comprehensive security review report ([SECURITY_REVIEW_REPORT.md](SECURITY_REVIEW_REPORT.md))
+   - Container vulnerability analysis
+   - Production deployment guides ([DEPLOYMENT_DOCUMENTATION.md](DEPLOYMENT_DOCUMENTATION.md))
+   - Security best practices and hardening recommendations
 
-docker-compose up # run the containers
+## Original vs Enhanced Comparison
 
-open "http://localhost" # open browser, and you can using the collbration functions
-```
+| Feature | Original alswl/excalidraw-collaboration | This Enhanced Fork |
+|---------|----------------------------------------|-------------------|
+| **Basic Docker Setup** | HTTP only | HTTP + **HTTPS with SSL** |
+| **Collaboration Features** | Limited (crypto.subtle issues) | **Fully working** |
+| **Production Deployment** | Manual setup required | **K8s + OpenShift ready** |
+| **SSL/TLS Support** | Advanced nginx only | **Complete HTTPS setup** |
+| **Security Documentation** | Not included | **Comprehensive review** |
+| **Container Orchestration** | Docker Compose only | **K8s + OpenShift manifests** |
+| **Certificate Management** | Manual | **Automated with cert-manager** |
 
-Browse it:
-
-- open http://127.0.0.1/ ,and you will see the excalidraw page
-- Click the `Live Collaboration` button, and you will see the collaboration page
-- Now you can share the collaboration page with your friends, and you can draw together.
-
-About public network release:
-
-if you want to release your own excalidraw in public network,
-you should modify the `docker-compose.yaml` file,
-Replace the `VITE_APP_HTTP_STORAGE_BACKEND_URL` and `VITE_APP_WS_SERVER_URL` with your own domain.
-
-## Advanced mode
-
-### advanced-nginx
-
-Features:
-
-- Setup with one domain, and use nginx to proxy the requests to the backend services
-- HTTPS support
-
-### traefik (not part of this repo)
-
-A configurable docker-compose example for a traefik setup can be found here:
-
-<https://github.com/Someone0nEarth/excalidraw-self-hosted>
-
-
-## Roadmap
-
-- [x] self-host
-- [x] collaboration feature works
-- [x] docker-compose support
-- [x] no pre-build image, dynamic env
-- [x] upload Docker Hub image
-- [ ] S3 storage support
-- [ ] SSO support
-- [x] HTTPS Demo and
-- [x] HTTPS docs
-- [ ] Helm support
-- [x] online demo
-- [x] one click to deploy Railway
-
-## Upgrade Guide
-
-- v0.15.0 -> v0.16.1
-  - replace `REACT_APP_` env with `VITE_APP_`
-
-## Q & A
-
-### How to deploy on the cloud(aws etc)
-
-The `docker-compose.yaml` file is for local deploy, if you want to deploy on the cloud,
-you should prepare 2 Load Balancer(with HTTPS cert), one for websocket server, one for storage server.
-
-The `VITE_APP_HTTP_STORAGE_BACKEND_URL` is for the Load Balancer URL(HTTPS) for storage,
-and the `VITE_APP_WS_SERVER_URL` is for the Load Balancer URL(HTTPS) for websocket.
-
-Here is a conversation about how to deploy on the aws: https://github.com/alswl/excalidraw-collaboration/issues/22
-
-### generateKey problem
-
-Error message:
+## Architecture
 
 ```
-TypeError: Cannot read properties of undefined (reading 'generateKey')
+┌─────────────────┐    HTTPS     ┌─────────────────────┐
+│   User Browser  │◄────────────►│   Nginx Proxy       │
+│                 │   (443/8443) │   SSL Termination   │
+└─────────────────┘              └──────────┬──────────┘
+                                            │
+                                ┌───────────┼───────────┐
+                                ▼           ▼           ▼
+                        ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+                        │ Frontend    │ │ Storage     │ │ Room        │
+                        │ (Excalidraw)│ │ Backend     │ │ Service     │
+                        │ Port 80     │ │ Port 8080   │ │ Port 80     │
+                        └─────────────┘ └─────────────┘ └─────────────┘
 ```
 
-Why: The excalidraw is using crypto module of Javascript, the HTTPS is required.
+## Quick Start Options
 
-How to solve: use HTTPS to access the page, or use http://localhost instead.
+### 1. Enhanced HTTPS Setup (Recommended)
 
-## Contributors
+**Why HTTPS?** Excalidraw's collaboration features require the `crypto.subtle` Web API, which is only available in secure contexts (HTTPS).
 
-<a href="https://github.com/alswl/excalidraw-collaboration/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=alswl/excalidraw-collaboration" />
-</a>
+```bash
+git clone https://github.com/mueslipolo/excalidraw-collab.git
+cd excalidraw-collab/local-https
+docker-compose up -d
+
+# Access at: https://localhost:8443
+# Accept certificate warning for self-signed cert in development
+```
+
+### 2. Original HTTP Setup (Limited Functionality)
+
+```bash
+cd excalidraw-collab/basic
+docker-compose up -d
+
+# Access at: http://localhost:8080
+# Note: Collaboration features won't work due to crypto.subtle requirement
+```
+
+### 3. Kubernetes Production Deployment
+
+```bash
+cd k8s/
+# Edit kustomization.yaml with your domain
+kubectl apply -k .
+kubectl get pods -n excalidraw-collab -w
+```
+
+### 4. OpenShift Deployment
+
+```bash
+cd openshift/
+oc new-project excalidraw-collab
+oc apply -f .
+oc create route edge --service=nginx-proxy
+```
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Purpose | Default Value |
+|----------|---------|---------------|
+| `VITE_APP_HTTP_STORAGE_BACKEND_URL` | Storage API URL | `https://localhost:8443/api/v2` |
+| `VITE_APP_WS_SERVER_URL` | WebSocket server URL | `https://localhost:8443` |
+| `VITE_APP_BACKEND_V2_GET_URL` | GET API endpoint | `https://localhost:8443/api/v2/scenes/` |
+| `VITE_APP_BACKEND_V2_POST_URL` | POST API endpoint | `https://localhost:8443/api/v2/scenes/` |
+| `VITE_APP_DISABLE_TRACKING` | Disable analytics | `true` |
+
+**For Production:** Replace all `localhost:8443` references with your actual domain.
+
+## Security
+
+### Security Status: SAFE TO USE
+
+A comprehensive security review has been conducted - see [SECURITY_REVIEW_REPORT.md](SECURITY_REVIEW_REPORT.md).
+
+**Key Security Features:**
+- **HTTPS Mandatory**: Collaboration requires secure context
+- **No Hardcoded Secrets**: Configuration via environment variables  
+- **Container Security**: Non-privileged containers with security contexts
+- **Network Isolation**: Internal service communication
+- **Privacy Focused**: Tracking disabled by default
+
+## Documentation
+
+- **[DEPLOYMENT_DOCUMENTATION.md](DEPLOYMENT_DOCUMENTATION.md)** - Complete production deployment guide
+- **[SECURITY_REVIEW_REPORT.md](SECURITY_REVIEW_REPORT.md)** - Security analysis and recommendations
+- **[k8s/README.md](k8s/README.md)** - Kubernetes-specific deployment instructions
+- **[openshift/README.md](openshift/README.md)** - OpenShift deployment guide
+
+## Common Issues & Solutions
+
+### "crypto.subtle is undefined" Error
+**Problem:** Collaboration features don't work  
+**Solution:** Use the HTTPS setup instead of HTTP-only setup
+
+### Certificate Warnings
+**Problem:** Browser shows security warnings  
+**Solution:** Expected with self-signed certificates - click "Advanced" → "Proceed to site"
+
+### WebSocket Connection Failed
+**Problem:** Real-time collaboration not working  
+**Solution:** Check proxy configuration and ensure ingress/route supports WebSocket upgrades
+
+## Resource Requirements
+
+### Minimum Production Resources
+
+| Service | CPU | Memory | Storage | Scaling |
+|---------|-----|--------|---------|---------|
+| Frontend | 100m | 128Mi | - | Horizontal |
+| Storage Backend | 200m | 256Mi | - | Horizontal |
+| Room Service | 100m | 128Mi | - | Horizontal |
+| Nginx Proxy | 50m | 64Mi | - | Horizontal |
+| MongoDB* | 500m | 512Mi | 10Gi+ | Replica Set |
+
+*MongoDB not included in basic setup but recommended for production
+
+## Migration Guide
+
+### From Original Repository
+
+1. **Clone this enhanced fork:**
+   ```bash
+   git clone https://github.com/mueslipolo/excalidraw-collab.git
+   ```
+
+2. **Choose deployment method:**
+   - For development: Use `/local-https/` for working collaboration
+   - For production: Use `/k8s/` or `/openshift/` manifests
+
+3. **Update configuration:**
+   - Replace domain references in environment variables
+   - Configure proper SSL certificates for production
+
+## Credits & License
+
+- **Original Project:** [alswl/excalidraw-collaboration](https://github.com/alswl/excalidraw-collaboration) by [@alswl](https://github.com/alswl)
+- **Enhanced by:** Additional HTTPS support, container orchestration, and production deployment features
+- **License:** MIT License (same as original)

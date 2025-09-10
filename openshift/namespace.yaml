@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: excalidraw-collab
+  labels:
+    name: excalidraw-collab
+    app: excalidraw-collaboration
+  annotations:
+    openshift.io/display-name: "Excalidraw Collaboration"
+    openshift.io/description: "Self-hosted collaborative drawing platform"

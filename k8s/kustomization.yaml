@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: excalidraw-collab
+
+resources:
+- namespace.yaml
+- configmap.yaml
+- deployments.yaml
+- services.yaml
+- ingress.yaml
+
+commonLabels:
+  app.kubernetes.io/name: excalidraw-collaboration
+  app.kubernetes.io/version: v0.17.3-fork-b1
+  app.kubernetes.io/part-of: excalidraw
+
+# Customize your domain here
+patchesStrategicMerge:
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: excalidraw-config
+    namespace: excalidraw-collab
+  data:
+    VITE_APP_BACKEND_V2_GET_URL: "https://excalidraw.example.com/api/v2/scenes/"
+    VITE_APP_BACKEND_V2_POST_URL: "https://excalidraw.example.com/api/v2/scenes/"
+    VITE_APP_WS_SERVER_URL: "https://excalidraw.example.com"
+    VITE_APP_HTTP_STORAGE_BACKEND_URL: "https://excalidraw.example.com/api/v2"
+    PUBLIC_URL: "https://excalidraw.example.com"
+
+images:
+- name: docker.io/alswl/excalidraw
+  newTag: v0.17.3-fork-b1
+- name: docker.io/alswl/excalidraw-storage-backend
+  newTag: v2023.11.11
+- name: docker.io/excalidraw/excalidraw-room
+  newTag: sha-49bf529
